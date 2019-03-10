@@ -19,7 +19,7 @@ const char doorEntryContactName[] PROGMEM = "doorEntryContact";
 const char lightAlarmName[] PROGMEM = "lightAlarm";
 const char moveRelayName[] PROGMEM = "moveRelay";
 const char buzzerRelayName[] PROGMEM = "buzzerRelay";
-const char out1RelayName[] PROGMEM = "out1Relay";
+const char heaterRelayName[] PROGMEM = "heaterRelay";
 const char out2RelayName[] PROGMEM = "out2Relay";
 const char out3RelayName[] PROGMEM = "out3Relay";
 const char out4RelayName[] PROGMEM = "out4Relay";
@@ -34,14 +34,16 @@ Contact doorEntryContact(doorEntryContactName, A2);
 Relay lightAlarm(lightAlarmName, A3);
 Relay moveRelay(moveRelayName, 13);
 Relay buzzerRelay(buzzerRelayName, 3);
-Relay out1Relay(out1RelayName, 4);
+Relay heaterRelay(heaterRelayName, 4);
 Relay out2Relay(out2RelayName, 5);
 Relay out3Relay(out3RelayName, 6);
 Relay out4Relay(out4RelayName, 7);
 
-static uint32_t loopNb = 0;
+uint32_t previousTime_Contact = 0;
+uint32_t previousTime_Temp = 0;
+uint32_t currentTime = 0;
 
-void ping_cmdGet(int arg_cnt, char **args) { cnc_print_cmdGet_u32(pingName, loopNb); }
+void ping_cmdGet(int arg_cnt, char **args) { cnc_print_cmdGet_u32(pingName, currentTime); }
 void moveCoridorContact_cmdGet(int arg_cnt, char **args) { moveCoridorContact.cmdGet(arg_cnt, args); }
 void moveDiningContact_cmdGet(int arg_cnt, char **args) { moveDiningContact.cmdGet(arg_cnt, args); }
 void moveEntryContact_cmdGet(int arg_cnt, char **args) { moveEntryContact.cmdGet(arg_cnt, args); }
@@ -52,8 +54,8 @@ void moveRelay_cmdGet(int arg_cnt, char **args) { moveRelay.cmdGet(arg_cnt, args
 void moveRelay_cmdSet(int arg_cnt, char **args) { moveRelay.cmdSet(arg_cnt, args); }
 void buzzerRelay_cmdGet(int arg_cnt, char **args) { buzzerRelay.cmdGet(arg_cnt, args); }
 void buzzerRelay_cmdSet(int arg_cnt, char **args) { buzzerRelay.cmdSet(arg_cnt, args); }
-void out1Relay_cmdGet(int arg_cnt, char **args) { out1Relay.cmdGet(arg_cnt, args); }
-void out1Relay_cmdSet(int arg_cnt, char **args) { out1Relay.cmdSet(arg_cnt, args); }
+void heaterRelay_cmdGet(int arg_cnt, char **args) { heaterRelay.cmdGet(arg_cnt, args); }
+void heaterRelay_cmdSet(int arg_cnt, char **args) { heaterRelay.cmdSet(arg_cnt, args); }
 void out2Relay_cmdGet(int arg_cnt, char **args) { out2Relay.cmdGet(arg_cnt, args); }
 void out2Relay_cmdSet(int arg_cnt, char **args) { out2Relay.cmdSet(arg_cnt, args); }
 void out3Relay_cmdGet(int arg_cnt, char **args) { out3Relay.cmdGet(arg_cnt, args); }
@@ -79,8 +81,8 @@ void setup() {
   cnc_cmdSet_Add(moveRelayName, moveRelay_cmdSet);
   cnc_cmdGet_Add(buzzerRelayName, buzzerRelay_cmdGet);
   cnc_cmdSet_Add(buzzerRelayName, buzzerRelay_cmdSet);
-  cnc_cmdGet_Add(out1RelayName, out1Relay_cmdGet);
-  cnc_cmdSet_Add(out1RelayName, out1Relay_cmdSet);
+  cnc_cmdGet_Add(heaterRelayName, heaterRelay_cmdGet);
+  cnc_cmdSet_Add(heaterRelayName, heaterRelay_cmdSet);
   cnc_cmdGet_Add(out2RelayName, out2Relay_cmdGet);
   cnc_cmdSet_Add(out2RelayName, out2Relay_cmdSet);
   cnc_cmdGet_Add(out3RelayName, out3Relay_cmdGet);
@@ -90,30 +92,31 @@ void setup() {
   lightAlarm.open();
   moveRelay.open();
   buzzerRelay.open();
-  out1Relay.open();
+  heaterRelay.open();
   out2Relay.open();
   out3Relay.open();
   out4Relay.open();
+  previousTime_Contact = millis();
+  previousTime_Temp = millis();
 }
 
 void loop() {
-  delay(1);
-  lightAlarm.run(false);
-  moveRelay.run(false);
-  buzzerRelay.run(false);
-  out1Relay.run(false);
-  out2Relay.run(false);
-  out3Relay.run(false);
-  out4Relay.run(false);
+  lightAlarm.run(false); cncPoll();
+  moveRelay.run(false); cncPoll();
+  buzzerRelay.run(false); cncPoll();
+  heaterRelay.run(false); cncPoll();
+  out2Relay.run(false); cncPoll();
+  out3Relay.run(false); cncPoll();
+  out4Relay.run(false); cncPoll();
 
-  /* HK @ 1Hz */
-  if(0 == loopNb%1000) {
-    moveCoridorContact.run(true);
-    moveDiningContact.run(true);
-    moveEntryContact.run(true);
-    doorEntryContact.run(true);
+  /* Contact HK @ 1.0Hz */
+  currentTime = millis(); cncPoll();
+  if((uint32_t)(currentTime - previousTime_Contact) >= 1000) {
+    moveCoridorContact.run(true); cncPoll();
+    moveDiningContact.run(true); cncPoll();
+    moveEntryContact.run(true); cncPoll();
+    doorEntryContact.run(true); cncPoll();
+    previousTime_Contact = currentTime;
   }
   cncPoll();
-  loopNb++;
-  if(1000000000 <= loopNb) { loopNb = 0; }
 }
