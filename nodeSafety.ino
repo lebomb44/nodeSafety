@@ -4,7 +4,7 @@
 
 const char nodeName[] PROGMEM = "safety";
 const char sepName[] PROGMEM = " ";
-const char hkName[] PROGMEM = "hk";
+const char hkName[] PROGMEM = "val";
 const char cmdGetName[] PROGMEM = "get";
 const char cmdSetName[] PROGMEM = "set";
 
@@ -39,8 +39,8 @@ Relay out2Relay(out2RelayName, 5);
 Relay out3Relay(out3RelayName, 6);
 Relay out4Relay(out4RelayName, 7);
 
-uint32_t previousTime_Contact = 0;
-uint32_t previousTime_Temp = 0;
+uint32_t previousTime_1s = 0;
+uint32_t previousTime_10s = 0;
 uint32_t currentTime = 0;
 
 void ping_cmdGet(int arg_cnt, char **args) { cnc_print_cmdGet_u32(pingName, currentTime); }
@@ -96,27 +96,30 @@ void setup() {
   out2Relay.open();
   out3Relay.open();
   out4Relay.open();
-  previousTime_Contact = millis();
-  previousTime_Temp = millis();
+  previousTime_1s = millis();
+  previousTime_10s = previousTime_1s;
 }
 
 void loop() {
-  lightAlarm.run(false); cncPoll();
-  moveRelay.run(false); cncPoll();
-  buzzerRelay.run(false); cncPoll();
-  heaterRelay.run(false); cncPoll();
-  out2Relay.run(false); cncPoll();
-  out3Relay.run(false); cncPoll();
-  out4Relay.run(false); cncPoll();
-
-  /* Contact HK @ 1.0Hz */
   currentTime = millis(); cncPoll();
-  if((uint32_t)(currentTime - previousTime_Contact) >= 1000) {
+  /* HK @ 1.0Hz */
+  if((uint32_t)(currentTime - previousTime_1s) >= 1000) {
+    lightAlarm.run(true); cncPoll();
+    moveRelay.run(true); cncPoll();
+    buzzerRelay.run(true); cncPoll();
+    heaterRelay.run(true); cncPoll();
+    out2Relay.run(true); cncPoll();
+    out3Relay.run(true); cncPoll();
+    out4Relay.run(true); cncPoll();
     moveCoridorContact.run(true); cncPoll();
     moveDiningContact.run(true); cncPoll();
     moveEntryContact.run(true); cncPoll();
     doorEntryContact.run(true); cncPoll();
-    previousTime_Contact = currentTime;
+    previousTime_1s = currentTime;
   }
-  cncPoll();
+  /* HK @ 0.1Hz */
+  currentTime = millis();
+  if((uint32_t)(currentTime - previousTime_10s) >= 10000) {
+    previousTime_10s = currentTime;
+  }
 }
