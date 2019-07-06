@@ -33,11 +33,11 @@ Contact moveEntryNotUsedContact(moveEntryNotUsedContactName, A0);
 Contact doorEntryContact(doorEntryContactName, A2);
 Relay lightAlarm(lightAlarmName, A3);
 Relay moveRelay(moveRelayName, 13);
-Relay buzzerRelay(buzzerRelayName, 3);
-Relay heaterRelay(heaterRelayName, 4);
-Relay out2Relay(out2RelayName, 5);
-Relay out3Relay(out3RelayName, 6);
-Relay out4Relay(out4RelayName, 7);
+Relay buzzerRelay(buzzerRelayName, 3); // Contact 0
+Relay heaterRelay(heaterRelayName, 4); // Contact 1
+Relay out2Relay(out2RelayName, 5); // Contact 2
+Relay out3Relay(out3RelayName, 6); // Contact 3
+Relay out4Relay(out4RelayName, 7); // Contact 4
 
 uint32_t previousTime_1s = 0;
 uint32_t previousTime_10s = 0;
