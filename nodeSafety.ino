@@ -102,8 +102,8 @@ void setup() {
 
 void loop() {
   currentTime = millis(); cncPoll();
-  /* HK @ 1.0Hz */
-  if((uint32_t)(currentTime - previousTime_1s) >= 1000) {
+  /* HK @ 2.0Hz */
+  if((uint32_t)(currentTime - previousTime_1s) >= 500) {
     lightAlarm.run(true); cncPoll();
     moveRelay.run(true); cncPoll();
     buzzerRelay.run(true); cncPoll();
