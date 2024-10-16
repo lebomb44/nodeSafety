@@ -20,7 +20,7 @@ const char lightAlarmName[] PROGMEM = "lightAlarm";
 const char moveRelayName[] PROGMEM = "moveRelay";
 const char buzzerRelayName[] PROGMEM = "buzzerRelay";
 const char heaterRelayName[] PROGMEM = "heaterRelay";
-const char out2RelayName[] PROGMEM = "out2Relay";
+const char wifiRelayName[] PROGMEM = "wifiRelay";
 const char out3RelayName[] PROGMEM = "out3Relay";
 const char out4RelayName[] PROGMEM = "out4Relay";
 
@@ -35,7 +35,7 @@ Relay lightAlarm(lightAlarmName, A3);
 Relay moveRelay(moveRelayName, 13);
 Relay buzzerRelay(buzzerRelayName, 3); // Contact 0
 Relay heaterRelay(heaterRelayName, 4); // Contact 1
-Relay out2Relay(out2RelayName, 5); // Contact 2
+Relay wifiRelay(wifiRelayName, 5); // Contact 2
 Relay out3Relay(out3RelayName, 6); // Contact 3
 Relay out4Relay(out4RelayName, 7); // Contact 4
 
@@ -56,8 +56,8 @@ void buzzerRelay_cmdGet(int arg_cnt, char **args) { buzzerRelay.cmdGet(arg_cnt, 
 void buzzerRelay_cmdSet(int arg_cnt, char **args) { buzzerRelay.cmdSet(arg_cnt, args); }
 void heaterRelay_cmdGet(int arg_cnt, char **args) { heaterRelay.cmdGet(arg_cnt, args); }
 void heaterRelay_cmdSet(int arg_cnt, char **args) { heaterRelay.cmdSet(arg_cnt, args); }
-void out2Relay_cmdGet(int arg_cnt, char **args) { out2Relay.cmdGet(arg_cnt, args); }
-void out2Relay_cmdSet(int arg_cnt, char **args) { out2Relay.cmdSet(arg_cnt, args); }
+void wifiRelay_cmdGet(int arg_cnt, char **args) { wifiRelay.cmdGet(arg_cnt, args); }
+void wifiRelay_cmdSet(int arg_cnt, char **args) { wifiRelay.cmdSet(arg_cnt, args); }
 void out3Relay_cmdGet(int arg_cnt, char **args) { out3Relay.cmdGet(arg_cnt, args); }
 void out3Relay_cmdSet(int arg_cnt, char **args) { out3Relay.cmdSet(arg_cnt, args); }
 void out4Relay_cmdGet(int arg_cnt, char **args) { out4Relay.cmdGet(arg_cnt, args); }
@@ -83,8 +83,8 @@ void setup() {
   cnc_cmdSet_Add(buzzerRelayName, buzzerRelay_cmdSet);
   cnc_cmdGet_Add(heaterRelayName, heaterRelay_cmdGet);
   cnc_cmdSet_Add(heaterRelayName, heaterRelay_cmdSet);
-  cnc_cmdGet_Add(out2RelayName, out2Relay_cmdGet);
-  cnc_cmdSet_Add(out2RelayName, out2Relay_cmdSet);
+  cnc_cmdGet_Add(wifiRelayName, wifiRelay_cmdGet);
+  cnc_cmdSet_Add(wifiRelayName, wifiRelay_cmdSet);
   cnc_cmdGet_Add(out3RelayName, out3Relay_cmdGet);
   cnc_cmdSet_Add(out3RelayName, out3Relay_cmdSet);
   cnc_cmdGet_Add(out4RelayName, out4Relay_cmdGet);
@@ -93,7 +93,7 @@ void setup() {
   moveRelay.open();
   buzzerRelay.open();
   heaterRelay.open();
-  out2Relay.open();
+  wifiRelay.open();
   out3Relay.open();
   out4Relay.open();
   previousTime_1s = millis();
@@ -108,7 +108,7 @@ void loop() {
     moveRelay.run(true); cncPoll();
     buzzerRelay.run(true); cncPoll();
     heaterRelay.run(true); cncPoll();
-    out2Relay.run(true); cncPoll();
+    wifiRelay.run(true); cncPoll();
     out3Relay.run(true); cncPoll();
     out4Relay.run(true); cncPoll();
     moveCoridorContact.run(true); cncPoll();
